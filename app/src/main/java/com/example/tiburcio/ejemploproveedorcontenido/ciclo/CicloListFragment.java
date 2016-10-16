@@ -1,6 +1,5 @@
 package com.example.tiburcio.ejemploproveedorcontenido.ciclo;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,6 +10,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +37,9 @@ public class CicloListFragment extends ListFragment
 
 	CicloCursorAdapter mAdapter;
 	LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
+
+	ActionMode mActionMode;
+	View viewSeleccionado;
 
 	public static CicloListFragment newInstance() {
 		CicloListFragment f = new CicloListFragment();
@@ -66,7 +70,7 @@ public class CicloListFragment extends ListFragment
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()){
 			case G.INSERTAR:
-				Intent intent = new Intent(getActivity(), CicloDetalleActivity.class);
+				Intent intent = new Intent(getActivity(), CicloInsercionActivity.class);
 				startActivity(intent);
 				break;
 		}
@@ -89,6 +93,7 @@ public class CicloListFragment extends ListFragment
 
 		return v;
 	}
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -98,7 +103,64 @@ public class CicloListFragment extends ListFragment
 
 		getLoaderManager().initLoader(0, null, mCallbacks);
 
+		getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				if(mActionMode!=null){
+					return false;
+				}
+				mActionMode = getActivity().startActionMode(mActionModeCallback);
+				view.setSelected(true);
+				viewSeleccionado = view;
+				return true;
+			}
+		});
 	}
+
+	ActionMode.Callback mActionModeCallback = new ActionMode.Callback(){
+
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			MenuInflater inflater = mode.getMenuInflater();
+			inflater.inflate(R.menu.menu_contextual, menu);
+			return true;
+		}
+
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false;
+		}
+
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			switch(item.getItemId()){
+				case R.id.menu_contextual_borrar:
+					int cicloId = (Integer) viewSeleccionado.getTag();
+					CicloProveedor.delete(getActivity().getContentResolver(), cicloId);
+					break;
+				case R.id.menu_contextual_editar:
+					Intent intent = new Intent(getActivity(), CicloActualizacionActivity.class);
+					cicloId = (Integer) viewSeleccionado.getTag();
+					Log.i("El identificador 1", "kk"+cicloId);
+					Ciclo ciclo = CicloProveedor.read(getActivity().getContentResolver(), cicloId);
+					Log.i("El identificador", ciclo.getNombre());
+					intent.putExtra("ID", ciclo.getID());
+					intent.putExtra("Nombre", ciclo.getNombre());
+					intent.putExtra("Abreviatura", ciclo.getAbreviatura());
+					startActivity(intent);
+					break;
+				default:
+					return false;
+			}
+			mode.finish();
+			return true;
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			mActionMode = null;
+		}
+	};
 
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		// This is called when a new Loader needs to be created.  This

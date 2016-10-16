@@ -27,7 +27,18 @@
         </activity>
 
         <activity
-            android:name=".ciclo.CicloDetalleActivity"
+            android:name=".ciclo.CicloInsercionActivity"
+            android:parentActivityName=".ciclo.CicloActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ciclo.CicloActivity" />
+        </activity>
+
+        <activity
+            android:name=".ciclo.CicloActualizacionActivity"
             android:parentActivityName=".ciclo.CicloActivity"
             android:theme="@style/AppTheme.NoActionBar">
 

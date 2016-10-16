@@ -13,7 +13,7 @@ import com.example.tiburcio.ejemploproveedorcontenido.constantes.G;
 import com.example.tiburcio.ejemploproveedorcontenido.pojos.Ciclo;
 import com.example.tiburcio.ejemploproveedorcontenido.proveedor.CicloProveedor;
 
-public class CicloDetalleActivity extends AppCompatActivity {
+public class CicloInsercionActivity extends AppCompatActivity {
     EditText editTextCicloNombre;
     EditText editTextCicloAbreviatura;
 

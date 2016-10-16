@@ -27,7 +27,7 @@ public class ProveedorDeContenido extends ContentProvider {
     private SQLiteDatabase sqlDB;
     public DatabaseHelper dbHelper;
     private static final String DATABASE_NAME = "Convalidaciones.db";
-    private static final int DATABASE_VERSION = 31;
+    private static final int DATABASE_VERSION = 35;
 
     private static final String CICLO_TABLE_NAME = "Ciclo";
 
